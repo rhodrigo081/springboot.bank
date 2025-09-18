@@ -1,38 +1,42 @@
 package com.example.demo.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table(name = "TB_Customer")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    protected UUID id;
 
-    @Column(nullable = false)
+    @Column(name = "first_name", nullable = false, length = 60)
     protected String firstName;
 
-    @Column(nullable = false)
+    @Column(name = "last_name",nullable = false, length = 60)
     protected String lastName;
 
-    @Column(nullable = false)
+    @Column(name = "document", nullable = false, length = 14)
     protected String document;
 
-    @Column(nullable = false)
+    @Column(name = "email", nullable = false, length = 60)
     protected String email;
 
-    @Column(nullable = false)
+    @Column(name = "phone", nullable = false, length = 11)
     protected String phone;
 
-    @Column(nullable = false)
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JsonIgnoreProperties("customer")
     protected Account account;
 }
