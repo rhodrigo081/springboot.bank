@@ -21,4 +21,8 @@ public class PixKey {
 
     @Column(nullable = false)
     protected PixKeyType type;
+
+    @Version
+    @Column(name = "version")
+    protected Long version;
 }

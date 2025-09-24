@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "TB_Customer")
@@ -26,6 +26,9 @@ public class Customer {
 
     @Column(name = "last_name", nullable = false, length = 60)
     protected String lastName;
+
+    @Column(name = "date_birth", nullable = false)
+    protected LocalDateTime dateBirth;
 
     @Column(name = "cpf", nullable = false, length = 11)
     protected String cpf;

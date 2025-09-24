@@ -43,6 +43,10 @@ public class Transaction {
     @Column(name = "amount", nullable = false)
     protected Double amount;
 
+    @Version
+    @Column(name = "version")
+    protected Long version;
+
     @PrePersist
     public void prePersist() {
         this.date = LocalDateTime.now();
