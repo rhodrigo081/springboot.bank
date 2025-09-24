@@ -1,6 +1,5 @@
 package com.example.demo.model;
 
-
 import com.example.demo.enums.TransactionType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -41,7 +40,7 @@ public class Transaction {
     @Column(name = "transaction_type", nullable = false)
     protected TransactionType type;
 
-    @Column(name = "amountd", nullable = false)
+    @Column(name = "amount", nullable = false)
     protected Double amount;
 
     @PrePersist
