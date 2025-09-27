@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -21,11 +20,8 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.UUID)
     protected UUID id;
 
-    @Column(name = "first_name", nullable = false, length = 60)
-    protected String firstName;
-
-    @Column(name = "last_name", nullable = false, length = 60)
-    protected String lastName;
+    @Column(name = "full_name", nullable = false, length = 60)
+    protected String fullName;
 
     @Column(name = "date_birth", nullable = false)
     protected LocalDateTime dateBirth;
@@ -43,11 +39,12 @@ public class Customer {
     @JsonIgnoreProperties("customer")
     protected Account account;
 
-    public Customer(String firstName, String lastName, String cpf, String email, String phone) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Customer(String fullName, LocalDateTime dateBirth, String cpf, String email, String phone, Account account) {
+        this.fullName = fullName;
+        this.dateBirth = dateBirth;
         this.cpf = cpf;
         this.email = email;
         this.phone = phone;
+        this.account = account;
     }
 }
