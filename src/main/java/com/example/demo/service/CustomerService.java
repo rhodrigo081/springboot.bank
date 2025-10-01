@@ -18,23 +18,33 @@ public class CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
 
+    private void checkIfCustomerExists(CustomerRecordDto customerDTO) {
+        Customer customerByCPF = findCustomerByExactCPF(customerDTO.cpf());
+        Customer customerByEmail = findCustomerByExactEmail(customerDTO.email());
+        Customer customerByPhone = findCustomerByExactPhone(customerDTO.phone());
+
+        if (customerByCPF != null) {
+            throw new IllegalArgumentException("Customer with CPF already exists");
+        }
+        if (customerByEmail != null) {
+            throw new IllegalArgumentException("Customer with Email already exists");
+        }
+        if (customerByPhone != null) {
+            throw new IllegalArgumentException("Customer with Phone already exists");
+        }
+
+    }
+
     @Transactional
-    public Customer customerRegister(CustomerRecordDto customerDTO) {
+    public Customer customerCreate(CustomerRecordDto customerDTO) {
         try {
             if (customerDTO == null) {
                 throw new IllegalArgumentException("Fill all fields");
             }
 
-            Customer customerByCPF = findCustomerByExactCPF(customerDTO.cpf());
-            Customer customerByEmail = findCustomerByExactEmail(customerDTO.email());
-            Customer customerByPhone = findCustomerByExactPhone(customerDTO.phone());
-
-            if (customerByCPF != null || customerByEmail != null || customerByPhone != null) {
-                throw new IllegalArgumentException("User Already Exists");
-            }
+            checkIfCustomerExists(customerDTO);
 
             Customer customer = new Customer();
-
             BeanUtils.copyProperties(customerDTO, customer);
 
             return customerRepository.save(customer);
