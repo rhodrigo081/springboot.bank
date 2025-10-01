@@ -48,7 +48,7 @@ public class CustomerService {
             BeanUtils.copyProperties(customerDTO, customer);
 
             return customerRepository.save(customer);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -63,7 +63,7 @@ public class CustomerService {
             }
 
             return customers;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -78,7 +78,7 @@ public class CustomerService {
             }
 
             return customers;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -93,7 +93,7 @@ public class CustomerService {
             }
 
             return customers;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -108,7 +108,7 @@ public class CustomerService {
             }
 
             return customers;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -117,7 +117,7 @@ public class CustomerService {
     public Customer findCustomerByExactCPF(String exactCPF) {
         try {
             return customerRepository.findCustomerByExactCPF(exactCPF).orElseThrow(() -> new NoSuchElementException(exactCPF));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -126,7 +126,7 @@ public class CustomerService {
     public Customer findCustomerByExactEmail(String exactEmail) {
         try {
             return customerRepository.findCustomerByExactEmail(exactEmail).orElseThrow(() -> new NoSuchElementException(exactEmail));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -135,7 +135,7 @@ public class CustomerService {
     public Customer findCustomerByExactPhone(String exactPhone) {
         try {
             return customerRepository.findCustomerByExactPhone(exactPhone).orElseThrow(() -> new NoSuchElementException(exactPhone));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -144,7 +144,7 @@ public class CustomerService {
     public Customer findCustomerByExactName(String exactName) {
         try {
             return customerRepository.findCustomerByExactName(exactName).orElseThrow(() -> new NoSuchElementException(exactName));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -154,7 +154,7 @@ public class CustomerService {
         try {
             customer.setAccount(account);
             return customerRepository.save(customer);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -168,7 +168,7 @@ public class CustomerService {
             customer.setPhone(customerDTO.phone());
 
             return customerRepository.save(customer);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
