@@ -116,7 +116,13 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public Customer findCustomerByExactCPF(String exactCPF) {
         try {
-            return customerRepository.findCustomerByExactCPF(exactCPF).orElseThrow(() -> new NoSuchElementException(exactCPF));
+            Customer searchedCustomer = customerRepository.findCustomerByExactCPF(exactCPF);
+
+            if (searchedCustomer == null) {
+                throw new NoSuchElementException("No users found with this cpf");
+            }
+
+            return searchedCustomer;
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -125,7 +131,14 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public Customer findCustomerByExactEmail(String exactEmail) {
         try {
-            return customerRepository.findCustomerByExactEmail(exactEmail).orElseThrow(() -> new NoSuchElementException(exactEmail));
+
+            Customer searchedCustomer = customerRepository.findCustomerByExactEmail(exactEmail);
+
+            if (searchedCustomer == null) {
+                throw new NoSuchElementException("No users found with this email");
+            }
+
+            return searchedCustomer;
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -134,7 +147,13 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public Customer findCustomerByExactPhone(String exactPhone) {
         try {
-            return customerRepository.findCustomerByExactPhone(exactPhone).orElseThrow(() -> new NoSuchElementException(exactPhone));
+            Customer searchedCustomer = customerRepository.findCustomerByExactPhone(exactPhone);
+
+            if (searchedCustomer == null) {
+                throw new NoSuchElementException("No users found with this phone");
+            }
+
+            return searchedCustomer;
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -143,7 +162,15 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public Customer findCustomerByExactName(String exactName) {
         try {
-            return customerRepository.findCustomerByExactName(exactName).orElseThrow(() -> new NoSuchElementException(exactName));
+
+            Customer searchedCustomer = customerRepository.findCustomerByExactName(exactName);
+
+            if (searchedCustomer == null) {
+                throw new NoSuchElementException("No users found with this name");
+            }
+
+            return searchedCustomer;
+
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -162,7 +189,7 @@ public class CustomerService {
     @Transactional
     public Customer updateCustomer(String cpf, CustomerRecordDto customerDTO) {
         try {
-            Customer customer = customerRepository.findCustomerByExactCPF(cpf).orElseThrow(() -> new NoSuchElementException(cpf));
+            Customer customer = customerRepository.findCustomerByExactCPF(cpf);
 
             customer.setEmail(customerDTO.email());
             customer.setPhone(customerDTO.phone());
