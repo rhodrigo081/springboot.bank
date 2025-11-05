@@ -10,7 +10,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 public class TransactionService {
 
@@ -104,14 +103,5 @@ public class TransactionService {
             case TRANSFER -> TransactionType.TRANSFER;
             default -> throw new IllegalArgumentException("Invalid transaction type");
         };
-    }
-
-    @Transactional(readOnly = true)
-    public List<Transaction> findByUserId(Long userId) {
-        try {
-            return transactionRepository.findByUserId(userId);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
     }
 }

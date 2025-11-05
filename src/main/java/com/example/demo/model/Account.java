@@ -42,12 +42,15 @@ public abstract class Account {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     protected List<PixKey> pixKeys;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "accountSender", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnoreProperties("account")
-    protected List<Transaction> transactions;
+    protected List<Transaction> senderTransactions;
+
+    @OneToMany(mappedBy = "accountReceiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnoreProperties("account")
+    protected List<Transaction> receivedTransactions;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_document", referencedColumnName = "document")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnoreProperties("account")
     protected Customer customer;
@@ -73,13 +76,14 @@ public abstract class Account {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Account(String login, String password, AccountType type, BigDecimal balance, List<PixKey> pixKeys, List<Transaction> transactions, Customer customer) {
+    public Account(String login, String password, AccountType type, BigDecimal balance, List<PixKey> pixKeys, List<Transaction> senderTransactions, List<Transaction> receiverTransactions, Customer customer) {
         this.login = login;
         this.password = password;
         this.type = type;
         this.balance = balance;
         this.pixKeys = pixKeys;
-        this.transactions = transactions;
+        this.senderTransactions = senderTransactions;
+        this.receivedTransactions = receiverTransactions;
         this.customer = customer;
     }
 }

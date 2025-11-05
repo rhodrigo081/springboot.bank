@@ -14,6 +14,6 @@ import java.util.UUID;
 public interface AccountRepository extends JpaRepository<Account, UUID> {
 
     Account findAccountByLogin(String login);
-    Account findAccountByPixKey(PixKey pixKey);
+    Account findAccountByPixKeys(PixKey pixKeys);
 
 }

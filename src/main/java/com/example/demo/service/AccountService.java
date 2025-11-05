@@ -86,7 +86,7 @@ public class AccountService {
     @Transactional(readOnly = true)
     public void findAccountByPixKey(PixKey pixKey) {
         try {
-            Account searchedAccount = accountRepository.findAccountByPixKey(pixKey);
+            Account searchedAccount = accountRepository.findAccountByPixKeys(pixKey);
 
             if (searchedAccount == null) {
                 throw new IllegalArgumentException("Invalid pix key");

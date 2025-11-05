@@ -19,9 +19,9 @@ public class CustomerService {
     private CustomerRepository customerRepository;
 
     private void checkIfCustomerExists(CustomerRecordDto customerDTO) {
-        Customer customerByCPF = findCustomerByExactCPF(customerDTO.cpf());
-        Customer customerByEmail = findCustomerByExactEmail(customerDTO.email());
-        Customer customerByPhone = findCustomerByExactPhone(customerDTO.phone());
+        Customer customerByCPF = findCustomerByCPF(customerDTO.cpf());
+        Customer customerByEmail = findCustomerByEmail(customerDTO.email());
+        Customer customerByPhone = findCustomerByPhone(customerDTO.phone());
 
         if (customerByCPF != null) {
             throw new IllegalArgumentException("Customer with CPF already exists");
@@ -56,7 +56,7 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public List<Customer> findCustomerByCPFContaining(String cpf) {
         try {
-            List<Customer> customers = customerRepository.findCustomerByCPFContaining(cpf);
+            List<Customer> customers = customerRepository.findCustomerByCpfContaining(cpf);
 
             if (customers.isEmpty()) {
                 throw new NoSuchElementException("No users found with: " + cpf);
@@ -101,7 +101,7 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public List<Customer> findCustomerByNameContaining(String name) {
         try {
-            List<Customer> customers = customerRepository.findCustomerByNameContaining(name);
+            List<Customer> customers = customerRepository.findCustomerByFullNameContaining(name);
 
             if (customers.isEmpty()) {
                 throw new NoSuchElementException("No users found with: " + name);
@@ -114,9 +114,9 @@ public class CustomerService {
     }
 
     @Transactional(readOnly = true)
-    public Customer findCustomerByExactCPF(String exactCPF) {
+    public Customer findCustomerByCPF(String cpf) {
         try {
-            Customer searchedCustomer = customerRepository.findCustomerByExactCPF(exactCPF);
+            Customer searchedCustomer = customerRepository.findCustomerByCpf(cpf);
 
             if (searchedCustomer == null) {
                 throw new NoSuchElementException("No users found with this cpf");
@@ -129,10 +129,10 @@ public class CustomerService {
     }
 
     @Transactional(readOnly = true)
-    public Customer findCustomerByExactEmail(String exactEmail) {
+    public Customer findCustomerByEmail(String email) {
         try {
 
-            Customer searchedCustomer = customerRepository.findCustomerByExactEmail(exactEmail);
+            Customer searchedCustomer = customerRepository.findCustomerByEmail(email);
 
             if (searchedCustomer == null) {
                 throw new NoSuchElementException("No users found with this email");
@@ -145,9 +145,9 @@ public class CustomerService {
     }
 
     @Transactional(readOnly = true)
-    public Customer findCustomerByExactPhone(String exactPhone) {
+    public Customer findCustomerByPhone(String phone) {
         try {
-            Customer searchedCustomer = customerRepository.findCustomerByExactPhone(exactPhone);
+            Customer searchedCustomer = customerRepository.findCustomerByPhone(phone);
 
             if (searchedCustomer == null) {
                 throw new NoSuchElementException("No users found with this phone");
@@ -160,10 +160,10 @@ public class CustomerService {
     }
 
     @Transactional(readOnly = true)
-    public Customer findCustomerByExactName(String exactName) {
+    public Customer findCustomerByName(String name) {
         try {
 
-            Customer searchedCustomer = customerRepository.findCustomerByExactName(exactName);
+            Customer searchedCustomer = customerRepository.findCustomerByFullName(name);
 
             if (searchedCustomer == null) {
                 throw new NoSuchElementException("No users found with this name");
@@ -189,7 +189,7 @@ public class CustomerService {
     @Transactional
     public Customer updateCustomer(String cpf, CustomerRecordDto customerDTO) {
         try {
-            Customer customer = customerRepository.findCustomerByExactCPF(cpf);
+            Customer customer = customerRepository.findCustomerByCpf(cpf);
 
             customer.setEmail(customerDTO.email());
             customer.setPhone(customerDTO.phone());

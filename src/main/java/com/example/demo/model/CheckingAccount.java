@@ -23,8 +23,9 @@ public class CheckingAccount extends Account {
     @Column(name = "daily_limit", precision = 10, scale = 2)
     protected BigDecimal dailyLimit = new BigDecimal("5000.00");
 
-    public CheckingAccount(String login, String password, AccountType type, BigDecimal balance, List<PixKey> pixKeys, List<Transaction> transactions, Customer customer, BigDecimal dailyLimit) {
-        super(login, password, type, balance, pixKeys, transactions, customer);
+    public CheckingAccount(String login, String password, AccountType type, BigDecimal balance, List<PixKey> pixKeys, List<Transaction> senderTransactions, List<Transaction> receiverTransactions, Customer customer, BigDecimal dailyLimit) {
+        super(login, password, type, balance, pixKeys, senderTransactions, receiverTransactions, customer);
         this.dailyLimit = dailyLimit;
     }
+
 }
