@@ -1,13 +1,15 @@
 package com.example.demo.service;
 
 import com.example.demo.dtos.AccountRecordDto;
-import com.example.demo.model.*;
+import com.example.demo.model.Account;
+import com.example.demo.model.CheckingAccount;
+import com.example.demo.model.PixKey;
+import com.example.demo.model.SavingAccount;
 import com.example.demo.repository.AccountRepository;
 import com.example.demo.repository.CustomerRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
 
 public class AccountService {
 
@@ -51,7 +53,7 @@ public class AccountService {
             }
 
             Account account = findAccountByLogin(accountDTO.login());
-            if(account == null){
+            if (account == null) {
                 throw new IllegalArgumentException("Account with this login does not exist");
             }
 
@@ -71,7 +73,7 @@ public class AccountService {
 
             Account searchedAccount = accountRepository.findAccountByLogin(login);
 
-            if(searchedAccount == null){
+            if (searchedAccount == null) {
                 throw new IllegalArgumentException("Account with this login does not exist");
             }
 
@@ -82,16 +84,15 @@ public class AccountService {
     }
 
     @Transactional(readOnly = true)
-    public Account findAccountByPixKey(PixKey pixKey) {
-        try{
+    public void findAccountByPixKey(PixKey pixKey) {
+        try {
             Account searchedAccount = accountRepository.findAccountByPixKey(pixKey);
 
-            if(searchedAccount == null){
+            if (searchedAccount == null) {
                 throw new IllegalArgumentException("Invalid pix key");
             }
 
-            return searchedAccount;
-        } catch (Throwable e){
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }

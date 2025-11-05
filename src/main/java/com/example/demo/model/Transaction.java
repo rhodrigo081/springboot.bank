@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -41,7 +42,7 @@ public class Transaction {
     protected TransactionType type;
 
     @Column(name = "amount", nullable = false)
-    protected Double amount;
+    protected BigDecimal amount;
 
     @Version
     @Column(name = "version")
