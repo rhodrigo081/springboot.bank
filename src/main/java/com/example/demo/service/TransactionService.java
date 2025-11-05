@@ -44,7 +44,7 @@ public class TransactionService {
 
             Account receiver = transactionDTO.accountReceiver();
 
-            if (transactionDTO.transactionType() != TransactionType.DEPOSIT) {
+            if (transactionDTO.transactionType() != TransactionType.TRANSFER) {
                 throw new IllegalArgumentException("Invalid account type");
             }
 
@@ -73,6 +73,25 @@ public class TransactionService {
             BeanUtils.copyProperties(transactionDTO, transaction);
             return transactionRepository.save(transaction);
 
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Transactional
+    public Transaction toDeposit(TransactionRecordDto transactionDTO) {
+        try {
+            validTransaction(transactionDTO);
+
+            Account receiver = transactionDTO.accountReceiver();
+            if (transactionDTO.transactionType() != TransactionType.DEPOSIT) {
+                throw new IllegalArgumentException("Invalid account type");
+            }
+
+            Transaction transaction = new Transaction();
+            BeanUtils.copyProperties(transactionDTO, transaction);
+
+            return transactionRepository.save(transaction);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
