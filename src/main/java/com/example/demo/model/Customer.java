@@ -1,50 +1,39 @@
 package com.example.demo.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @Entity
 @Table(name = "TB_Customer")
-@Inheritance(strategy = InheritanceType.JOINED)
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    protected UUID id;
+    private UUID id;
 
-    @Column(name = "full_name", nullable = false, length = 60)
-    protected String fullName;
+    @Column(name = "first_name", nullable = false, length = 60)
+    private String firstName;
 
-    @Column(name = "date_birth", nullable = false)
-    protected LocalDateTime dateBirth;
+    @Column(name = "last_name", nullable = false, length = 60)
+    private String lastName;
+
+    @Column(name = "date_of_birth", nullable = false)
+    private LocalDateTime dateOfBirth;
 
     @Column(name = "cpf", nullable = false, length = 11)
-    protected String cpf;
+    private String cpf;
 
-    @Column(name = "email", nullable = false, length = 60)
-    protected String email;
+    @Column(name = "email", nullable = false, length = 200)
+    private String email;
 
     @Column(name = "phone", nullable = false, length = 11)
-    protected String phone;
+    private String phone;
 
     @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    @JsonIgnoreProperties("customer")
-    protected Account account;
-
-    public Customer(String fullName, LocalDateTime dateBirth, String cpf, String email, String phone, Account account) {
-        this.fullName = fullName;
-        this.dateBirth = dateBirth;
-        this.cpf = cpf;
-        this.email = email;
-        this.phone = phone;
-        this.account = account;
-    }
+    @JsonIgnore
+    private Account account;
 }

@@ -2,27 +2,21 @@ package com.example.demo.model;
 
 import com.example.demo.enums.PixKeyType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "TB_PixKey")
 public class PixKey {
 
     @Id
-    protected String pixkey;
+    private String pixkey;
 
     @Column(nullable = false)
-    protected PixKeyType type;
+    @Enumerated(EnumType.STRING)
+    private PixKeyType type;
 
     @Version
     @Column(name = "version")
-    protected Long version;
+    private Long version;
 }
