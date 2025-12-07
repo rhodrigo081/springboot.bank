@@ -10,7 +10,7 @@ import lombok.*;
 public class PixKey {
 
     @Id
-    private String pixkey;
+    private String key;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

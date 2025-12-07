@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -18,12 +19,12 @@ public class Transaction {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "sender_id")
+    @JoinColumn(name = "account_origin_id")
     @JsonIgnoreProperties("transaction")
-    private Account accountSender;
+    private Account accountOrigin;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "receiver_id")
+    @JoinColumn(name = "account_receiver_id")
     @JsonIgnoreProperties("transaction")
     private Account accountReceiver;
 
@@ -35,7 +36,7 @@ public class Transaction {
     private TransactionType type;
 
     @Column(name = "amount", nullable = false)
-    private Double amount;
+    private BigDecimal amount;
 
     @Version
     @Column(name = "version")

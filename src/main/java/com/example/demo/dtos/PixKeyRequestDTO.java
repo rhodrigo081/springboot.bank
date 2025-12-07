@@ -1,7 +1,7 @@
 package com.example.demo.dtos;
 
 import com.example.demo.enums.PixKeyType;
-import jakarta.validation.constraints.NotBlank;
+import com.example.demo.model.Account;
 
-public record PixKeyRequestDTO(@NotBlank(message = "Choose pix key type") PixKeyType pixKeyType, String pixKey) {
+public record PixKeyRequestDTO(PixKeyType type, String key, Account account) {
 }

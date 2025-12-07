@@ -1,53 +1,53 @@
 package com.example.demo.exception;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.NoSuchElementException;
+import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class ExceptionGlobalHandler extends RuntimeException {
 
-    private final Logger logger = LoggerFactory.getLogger(ExceptionGlobalHandler.class);
 
-    public record ErrorResponse(String message, String error, String statusValue) {
+    public record ErrorResponse(String message, int error, String timestamp) {
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> illegalArgumentException(IllegalArgumentException e) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {
 
-        String error = "Invalid argument";
-        String message = e.getMessage();
-        String statusValue = String.valueOf(HttpStatus.UNPROCESSABLE_ENTITY.value());
+        HttpStatus status = HttpStatus.NOT_FOUND;
 
-        logger.error(message, e);
+        ErrorResponse error = new ErrorResponse(e.getMessage(), status.value(), LocalDateTime.now().toString());
 
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(message, error, statusValue));
+        return new ResponseEntity<ErrorResponse>(error, status);
     }
 
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ErrorResponse> noSuchElementException(NoSuchElementException e) {
-        String error = "Resource identifier not found";
-        String message = e.getMessage();
-        String statusValue = String.valueOf(HttpStatus.NOT_FOUND.value());
+    @ExceptionHandler(InvalidArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidArgumentExceptiom(InvalidArgumentException e) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
 
-        logger.error(message, e);
+        ErrorResponse error = new ErrorResponse(e.getMessage(), status.value(), LocalDateTime.now().toString());
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(message, error, statusValue));
+        return new ResponseEntity<ErrorResponse>(error, status);
     }
 
-    @ExceptionHandler(Throwable.class)
-    public ResponseEntity<ErrorResponse> throwable(Throwable e) {
-        String error = "Internal Server Error";
-        String message = e.getMessage();
-        String statusValue = String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedAccessException(UnauthorizedAccessException e) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
 
-        logger.error(message, e);
+        ErrorResponse error = new ErrorResponse(e.getMessage(), status.value(), LocalDateTime.now().toString());
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(error, message, statusValue));
+        return new ResponseEntity<ErrorResponse>(error, status);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleInternalError(Exception e) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        ErrorResponse error = new ErrorResponse(e.getMessage(), status.value(), LocalDateTime.now().toString());
+
+        return new ResponseEntity<ErrorResponse>(error, status);
     }
 }

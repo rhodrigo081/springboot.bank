@@ -1,4 +1,4 @@
 package com.example.demo.dtos;
 
-public record PixKeyResponseDTO(String pixkey) {
+public record PixKeyResponseDTO(String key) {
 }
