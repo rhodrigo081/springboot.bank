@@ -1,8 +1,9 @@
 package com.example.demo.service;
 
-import com.example.demo.dtos.PixKeyResponseDTO;
+import com.example.demo.dto.PixKeyResponseDTO;
 import com.example.demo.enums.PixKeyType;
 import com.example.demo.exception.InvalidArgumentException;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.model.Account;
 import com.example.demo.model.PixKey;
 import com.example.demo.repository.AccountRepository;
@@ -32,14 +33,16 @@ public class PixKeyService {
     }
 
     @Transactional
-    public PixKeyResponseDTO createPixKeyPhone(Account account) {
+    public PixKeyResponseDTO createPixKeyPhone(String cpf) {
+
+        Account accountSearchedByCustomerCpf = accountRepository.findByUser_Cpf(cpf).orElseThrow(() -> new NotFoundException("Account not found"));
 
         PixKey pixKeyPhone = new PixKey();
-        String accountPhone = account.getCustomer().getPhone();
-        List<PixKey> pixKeys = account.getPixKeys();
+        String accountPhone = accountSearchedByCustomerCpf.getUser().getPhone();
+        List<PixKey> pixKeys = accountSearchedByCustomerCpf.getPixKeys();
 
         pixKeyPhone.setKey(accountPhone);
-        pixKeyPhone.setAccount(account);
+        pixKeyPhone.setAccount(accountSearchedByCustomerCpf);
         pixKeyPhone.setType(PixKeyType.PHONE);
 
         if (pixKeys.size() >= 5) {
@@ -53,14 +56,16 @@ public class PixKeyService {
     }
 
     @Transactional
-    public PixKeyResponseDTO createPixKeyEmail(Account account) {
+    public PixKeyResponseDTO createPixKeyEmail(String cpf) {
+
+        Account accountSearchedByCustomerCpf = accountRepository.findByUser_Cpf(cpf).orElseThrow(() -> new NotFoundException("Account not found"));
 
         PixKey pixKeyEmail = new PixKey();
-        String accountEmail = account.getCustomer().getEmail();
-        List<PixKey> pixKeys = account.getPixKeys();
+        String accountEmail = accountSearchedByCustomerCpf.getUser().getEmail();
+        List<PixKey> pixKeys = accountSearchedByCustomerCpf.getPixKeys();
 
         pixKeyEmail.setKey(accountEmail);
-        pixKeyEmail.setAccount(account);
+        pixKeyEmail.setAccount(accountSearchedByCustomerCpf);
         pixKeyEmail.setType(PixKeyType.EMAIL);
 
         if (pixKeys.size() >= 5) {
@@ -74,14 +79,15 @@ public class PixKeyService {
     }
 
     @Transactional
-    public PixKeyResponseDTO createPixKeyCpf(Account account) {
+    public PixKeyResponseDTO createPixKeyCpf(String cpf) {
+
+        Account accountSearchedByCustomerCpf = accountRepository.findByUser_Cpf(cpf).orElseThrow(() -> new NotFoundException("Account not found"));
 
         PixKey pixKeyCpf = new PixKey();
-        String accountCpf = account.getCustomer().getCpf();
-        List<PixKey> pixKeys = account.getPixKeys();
+        List<PixKey> pixKeys = accountSearchedByCustomerCpf.getPixKeys();
 
-        pixKeyCpf.setKey(accountCpf);
-        pixKeyCpf.setAccount(account);
+        pixKeyCpf.setKey(cpf);
+        pixKeyCpf.setAccount(accountSearchedByCustomerCpf);
         pixKeyCpf.setType(PixKeyType.CPF);
 
         if (pixKeys.size() >= 5) {
@@ -96,13 +102,15 @@ public class PixKeyService {
     }
 
     @Transactional
-    public PixKeyResponseDTO generateRandoKey(Account account) {
+    public PixKeyResponseDTO generateRandoKey(String cpf) {
+
+        Account accountSearchedByCustomerCpf = accountRepository.findByUser_Cpf(cpf).orElseThrow(() -> new NotFoundException("Account not found"));
 
         PixKey randomPixKey = new PixKey();
         String randomKey = UUID.randomUUID().toString();
-        List<PixKey> pixKeys = account.getPixKeys();
+        List<PixKey> pixKeys = accountSearchedByCustomerCpf.getPixKeys();
 
-        randomPixKey.setAccount(account);
+        randomPixKey.setAccount(accountSearchedByCustomerCpf);
         randomPixKey.setKey(randomKey);
         randomPixKey.setType(PixKeyType.RANDOM);
 
@@ -112,6 +120,8 @@ public class PixKeyService {
         pixKeys.add(randomPixKey);
 
         PixKey randomPixKeySaved = pixKeyRepository.save(randomPixKey);
+        accountSearchedByCustomerCpf.setPixKeys(pixKeys);
+        accountRepository.save(accountSearchedByCustomerCpf);
 
 
         return convertToResponse(randomPixKeySaved);

@@ -20,12 +20,10 @@ public class Transaction {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_origin_id")
-    @JsonIgnoreProperties("transaction")
     private Account accountOrigin;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_receiver_id")
-    @JsonIgnoreProperties("transaction")
     private Account accountReceiver;
 
     @Column(name = "createdAt", nullable = false, updatable = false)

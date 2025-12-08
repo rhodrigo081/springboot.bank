@@ -1,12 +1,12 @@
 package com.example.demo.service;
 
-import com.example.demo.dtos.AccountRequestDTO;
-import com.example.demo.dtos.AccountResponseDTO;
-import com.example.demo.dtos.CustomerResponseDTO;
+import com.example.demo.dto.AccountRequestDTO;
+import com.example.demo.dto.AccountResponseDTO;
+import com.example.demo.dto.UserResponseDTO;
 import com.example.demo.exception.InvalidArgumentException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.model.Account;
-import com.example.demo.model.Customer;
+import com.example.demo.model.User;
 import com.example.demo.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,28 +22,28 @@ public class AccountService {
     private AccountRepository accountRepository;
 
     @Autowired
-    private CustomerService customerService;
+    private UserService userService;
 
     public AccountResponseDTO convertToResponse(Account account) {
         if (account == null) {
             return null;
         }
 
-        CustomerResponseDTO customerResponseDTO = customerService.convertToResponse(account.getCustomer());
+        UserResponseDTO userResponseDTO = userService.convertToResponse(account.getUser());
 
-        return new AccountResponseDTO(account.getAccountNumber(), account.getAgency(), account.getBalance(), customerResponseDTO);
+        return new AccountResponseDTO(account.getAccountNumber(), account.getAgency(), account.getBalance(), userResponseDTO);
     }
 
     @Transactional(readOnly = true)
-    public AccountResponseDTO findAccountByCustomerCpf(String cpf) {
-        Account accountSearchedByCustomerCpf = accountRepository.findByCustomer_Cpf(cpf).orElseThrow(() -> new NotFoundException("Account not found"));
+    public AccountResponseDTO findAccountByUserCpf(String cpf) {
+        Account accountSearchedByCustomerCpf = accountRepository.findByUser_Cpf(cpf).orElseThrow(() -> new NotFoundException("Account not found"));
 
         return convertToResponse(accountSearchedByCustomerCpf);
     }
 
     @Transactional(readOnly = true)
-    public AccountResponseDTO findAccountByCustomerEmail(String email) {
-        Account accountSearchedByCustomerEmail = accountRepository.findByCustomer_Email(email).orElseThrow(() -> new NotFoundException("Account not found"));
+    public AccountResponseDTO findAccountByUserEmail(String email) {
+        Account accountSearchedByCustomerEmail = accountRepository.findByUser_Email(email).orElseThrow(() -> new NotFoundException("Account not found"));
 
         return convertToResponse(accountSearchedByCustomerEmail);
     }
@@ -56,20 +56,24 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountResponseDTO createAccount(AccountRequestDTO accountRequestDTO, Customer accountOwner) {
+    public AccountResponseDTO createAccount(AccountRequestDTO accountRequestDTO) {
 
         if (accountRequestDTO == null) {
             throw new InvalidArgumentException("Fill all fields");
         }
 
-        if (accountRepository.findByCustomer_Cpf(accountOwner.getCpf()).isPresent()) {
+        User accountOwner = accountRequestDTO.user();
+
+        if (accountRepository.findByUser_Cpf(accountOwner.getCpf()).isPresent()) {
             throw new InvalidParameterException("Account already exists");
         }
 
         Account account = new Account();
 
+        Long maxNumber = accountRepository.countAccounts();
         account.setPassword(accountRequestDTO.password());
-        account.setCustomer(accountOwner);
+        account.setUser(accountOwner);
+        account.setAccountNumber(maxNumber == null ? 1 : maxNumber + 1);
         account.setBalance(BigDecimal.ZERO);
         account.setAgency("777");
 

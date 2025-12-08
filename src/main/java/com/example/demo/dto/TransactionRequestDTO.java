@@ -1,4 +1,4 @@
-package com.example.demo.dtos;
+package com.example.demo.dto;
 
 import com.example.demo.enums.TransactionType;
 import com.example.demo.model.Account;

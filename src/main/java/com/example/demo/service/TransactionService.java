@@ -1,9 +1,9 @@
 package com.example.demo.service;
 
-import com.example.demo.dtos.AccountResponseDTO;
-import com.example.demo.dtos.AccountStatementResponseDTO;
-import com.example.demo.dtos.TransactionRequestDTO;
-import com.example.demo.dtos.TransactionResponseDTO;
+import com.example.demo.dto.AccountResponseDTO;
+import com.example.demo.dto.AccountStatementResponseDTO;
+import com.example.demo.dto.TransactionRequestDTO;
+import com.example.demo.dto.TransactionResponseDTO;
 import com.example.demo.enums.TransactionType;
 import com.example.demo.exception.InvalidArgumentException;
 import com.example.demo.exception.NotFoundException;
@@ -63,9 +63,9 @@ public class TransactionService {
     public AccountStatementResponseDTO getAccountStatement(UUID accountId) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new NotFoundException("Account not found"));
 
-        List<Transaction> sentTransactions = transactionRepository.findAllByAccountOrigin(accountId);
+        List<Transaction> sentTransactions = transactionRepository.findAllByAccountOrigin_Id(accountId);
 
-        List<Transaction> receivedTransactions = transactionRepository.findAllByAccountReceiver(accountId);
+        List<Transaction> receivedTransactions = transactionRepository.findAllByAccountReceiver_Id(accountId);
 
         List<Transaction> allTransactions = new ArrayList<>();
         allTransactions.addAll(sentTransactions);
@@ -144,14 +144,14 @@ public class TransactionService {
             throw new InvalidArgumentException("Amount must be greater than zero");
         }
 
-        Account accountReceiver = accountRepository.findById(transactionRequestDTO.accountReceiver().getId()).orElseThrow(() -> new NotFoundException("Account not found"));
-        Account accountOrigin = accountRepository.findById(transactionRequestDTO.accountOrigin().getId()).orElseThrow(() -> new NotFoundException("Account not found"));
+        Account accountOrigin = transactionRequestDTO.accountOrigin();
+        Account accountReceiver = transactionRequestDTO.accountReceiver();
 
         if (accountOrigin.getBalance().compareTo(transactionRequestDTO.amount()) < 0) {
             throw new InvalidArgumentException("Insufficient balance");
         }
 
-        if (accountOrigin.equals(accountReceiver)) {
+        if (accountOrigin.getUser().getCpf().equals(accountReceiver.getUser().getCpf())) {
             throw new InvalidArgumentException("Is not possible to transfer to the same account.");
         }
 

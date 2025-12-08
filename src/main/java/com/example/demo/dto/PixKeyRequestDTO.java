@@ -1,4 +1,4 @@
-package com.example.demo.dtos;
+package com.example.demo.dto;
 
 import com.example.demo.enums.PixKeyType;
 import com.example.demo.model.Account;

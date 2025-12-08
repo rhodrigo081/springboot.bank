@@ -35,6 +35,15 @@ public class ExceptionGlobalHandler extends RuntimeException {
 
     @ExceptionHandler(UnauthorizedAccessException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorizedAccessException(UnauthorizedAccessException e) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+
+        ErrorResponse error = new ErrorResponse(e.getMessage(), status.value(), LocalDateTime.now().toString());
+
+        return new ResponseEntity<ErrorResponse>(error, status);
+    }
+
+    @ExceptionHandler(InvalidCredentialsExceptions.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentialsException(InvalidCredentialsExceptions e) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
         ErrorResponse error = new ErrorResponse(e.getMessage(), status.value(), LocalDateTime.now().toString());

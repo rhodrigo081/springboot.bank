@@ -23,8 +23,8 @@ public  class Account {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer accountNumber;
+    @Column(name = "account_number", nullable = false)
+    private Long accountNumber;
 
     @Column(name = "password", nullable = false, length = 255)
     private String password;
@@ -32,7 +32,7 @@ public  class Account {
     @Column(name= "agency", nullable = false)
     private String agency = "123";
 
-    @Column(name = "type", nullable = false)
+    @Column(name = "type", nullable = false, insertable = false, updatable = false)
     @Enumerated(EnumType.STRING)
     private AccountType type;
 
@@ -43,15 +43,11 @@ public  class Account {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<PixKey> pixKeys;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JsonIgnoreProperties("account")
-    private List<Transaction> transactions;
-
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "customer_document", referencedColumnName = "document")
+    @JoinColumn(name = "customer_cpf", referencedColumnName = "cpf")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnoreProperties("account")
-    private Customer customer;
+    private User user;
 
     @Column(name = "date_creation" ,nullable = false, updatable = false)
     private LocalDateTime createdAt;
