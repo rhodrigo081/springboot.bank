@@ -15,10 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -31,7 +27,7 @@ public class SecurityConfig {
     private AuthService authService;
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
@@ -47,19 +43,27 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         return http.csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/**").hasRole("USER").anyRequest().authenticated())
-                .formLogin(form -> form.disable())
-                .httpBasic(basic -> basic.disable())
+                        .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/account/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/transaction/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/pixkey/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT, "/user/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.DELETE, "/user/**").hasRole("USER")
+                        .anyRequest().authenticated())
+                .formLogin(form -> form
+                        .disable()).httpBasic(basic -> basic
+                        .disable())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

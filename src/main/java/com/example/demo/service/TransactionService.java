@@ -8,6 +8,7 @@ import com.example.demo.enums.TransactionType;
 import com.example.demo.exception.InvalidArgumentException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.model.Account;
+import com.example.demo.model.PixKey;
 import com.example.demo.model.Transaction;
 import com.example.demo.repository.AccountRepository;
 import com.example.demo.repository.TransactionRepository;
@@ -107,13 +108,13 @@ public class TransactionService {
             throw new InvalidArgumentException("Amount must be greater than zero");
         }
 
-        Account accountReceiver = accountRepository.findById(transactionRequestDTO.accountReceiver().getId()).orElseThrow(() -> new NotFoundException("Account not found"));
+        Account accountReceiver = accountRepository.findByUser_Cpf(transactionRequestDTO.accountReceiver()).orElseThrow(() -> new NotFoundException("Account not found"));
 
         BigDecimal newBalance = accountReceiver.getBalance().add(transactionRequestDTO.amount());
         accountReceiver.setBalance(newBalance);
         accountRepository.save(accountReceiver);
 
-        TransactionRequestDTO depositRequest = new TransactionRequestDTO(null, accountReceiver, TransactionType.DEPOSIT, transactionRequestDTO.amount());
+        TransactionRequestDTO depositRequest = new TransactionRequestDTO(null, transactionRequestDTO.accountReceiver(), TransactionType.DEPOSIT, transactionRequestDTO.amount());
         Transaction savedTransaction = saveTransaction(depositRequest);
 
         return convertToResponse(savedTransaction);
@@ -125,7 +126,7 @@ public class TransactionService {
             throw new InvalidArgumentException("Amount must be greater than zero");
         }
 
-        Account accountOrigin = accountRepository.findById(transactionRequestDTO.accountReceiver().getId()).orElseThrow(() -> new NotFoundException("Account not found"));
+        Account accountOrigin = accountRepository.findByUser_Cpf(transactionRequestDTO.accountOrigin()).orElseThrow(() -> new NotFoundException("Account not found"));
         BigDecimal newBalance = accountOrigin.getBalance().subtract(transactionRequestDTO.amount());
 
         accountOrigin.setBalance(newBalance);
@@ -144,8 +145,10 @@ public class TransactionService {
             throw new InvalidArgumentException("Amount must be greater than zero");
         }
 
-        Account accountOrigin = transactionRequestDTO.accountOrigin();
-        Account accountReceiver = transactionRequestDTO.accountReceiver();
+        Account accountOrigin = accountRepository.findByUser_Cpf(transactionRequestDTO.accountOrigin()).orElseThrow(() -> new NotFoundException("Account not found"));
+        Account accountReceiver = accountRepository.findByPixKeys_Key(transactionRequestDTO.accountReceiver()).orElseThrow(() -> new NotFoundException("Account not found"));
+
+        List<String> pixKeys = accountReceiver.getPixKeys().stream().map(PixKey::getKey).toList();
 
         if (accountOrigin.getBalance().compareTo(transactionRequestDTO.amount()) < 0) {
             throw new InvalidArgumentException("Insufficient balance");

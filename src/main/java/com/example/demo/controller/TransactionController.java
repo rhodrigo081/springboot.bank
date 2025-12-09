@@ -1,9 +1,12 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.PixKeyRequestDTO;
+import com.example.demo.dto.AmountRequestDTO;
 import com.example.demo.dto.TransactionRequestDTO;
 import com.example.demo.dto.TransactionResponseDTO;
+import com.example.demo.dto.TransferRequestDTO;
 import com.example.demo.model.Account;
+import com.example.demo.model.User;
+import com.example.demo.repository.AccountRepository;
 import com.example.demo.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,35 +26,46 @@ public class TransactionController {
     @Autowired
     private TransactionService transactionService;
 
-    private record Message(String message) {
-    }
+    @Autowired
+    private AccountRepository accountRepository;
 
     @PostMapping("/deposit")
-    public ResponseEntity<Message> deposit(@RequestBody Authentication authentication, BigDecimal amount) {
+    public ResponseEntity<?> deposit(Authentication authentication, @RequestBody AmountRequestDTO amountRequestDTO) {
 
-        Account account = (Account) authentication.getPrincipal();
-        TransactionRequestDTO transactionRequestDTO = new TransactionRequestDTO(null, account, null, amount);
-        transactionService.toDeposit(transactionRequestDTO);
+        User user = (User) authentication.getPrincipal();
+        Account account = user.getAccount();
+
+        TransactionRequestDTO transactionRequestDTO = new TransactionRequestDTO(null, account.getUser().getCpf(), null, amountRequestDTO.amount());
 
         TransactionResponseDTO depositResponse = transactionService.toDeposit(transactionRequestDTO);
 
-        return ResponseEntity.status(HttpStatus.OK).body(new Message("Deposited Successfully!" + depositResponse));
+        return ResponseEntity.status(HttpStatus.OK).body("Deposited Successfully!" + depositResponse);
     }
 
     @PostMapping("/withdraw")
-    public ResponseEntity<Message> withdraw(@RequestBody Authentication authentication, BigDecimal amount) {
-        Account account = (Account) authentication.getPrincipal();
-        TransactionRequestDTO transactionRequestDTO = new TransactionRequestDTO(account, null, null, amount);
+    public ResponseEntity<?> withdraw(Authentication authentication, @RequestBody AmountRequestDTO amountRequestDTO) {
+
+        User user = (User) authentication.getPrincipal();
+        Account account = user.getAccount();
+
+        TransactionRequestDTO transactionRequestDTO = new TransactionRequestDTO(account.getUser().getCpf(), null, null, amountRequestDTO.amount());
 
         TransactionResponseDTO withdrawResponse = transactionService.toWithdraw(transactionRequestDTO);
 
-        return ResponseEntity.status(HttpStatus.OK).body(new Message("Withdraw Successfully!" + withdrawResponse));
+        return ResponseEntity.status(HttpStatus.OK).body("Withdraw Successfully!" + withdrawResponse);
     }
 
     @PostMapping("/transfer")
-    public ResponseEntity<Message> transfer(@RequestBody Authentication authentication, String pixKey, BigDecimal amount) {
-        Account accountOrigin = (Account) authentication.getPrincipal();
-        Account 
+    public ResponseEntity<?> transfer(Authentication authentication, @RequestBody TransferRequestDTO transferRequestDTO) {
+        User user = (User) authentication.getPrincipal();
+        Account accountOrigin = user.getAccount();
+        Account accountReceiver = accountRepository.findByPixKeys_Key(transferRequestDTO.pixKey()).orElseThrow(() -> new RuntimeException("PIX key not found"));
+
+        TransactionRequestDTO transactionRequestDTO = new TransactionRequestDTO(accountOrigin.getUser().getCpf(), accountReceiver.getUser().getCpf(), null, transferRequestDTO.amount());
+
+        TransactionResponseDTO transferResponse = transactionService.toTransfer(transactionRequestDTO);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Transfer Successfully!" + transferResponse);
     }
 
 }

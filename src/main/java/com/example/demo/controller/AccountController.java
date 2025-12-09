@@ -18,10 +18,11 @@ public class AccountController {
     private AccountService accountService;
 
     @GetMapping
-    public ResponseEntity<AccountResponseDTO> accountDetails(@RequestBody Authentication authentication) {
+    public ResponseEntity<?> accountDetails(Authentication authentication) {
         String currentUserCpf =  authentication.getName();
 
-        AccountResponseDTO currentAccount = accountService.findAccountByCustomerCpf(currentUserCpf);
+        AccountResponseDTO currentAccount = accountService.findAccountByUserCpf(currentUserCpf);
+        System.out.println("Current Account : " + currentAccount);
 
         return ResponseEntity.status(HttpStatus.OK).body(currentAccount);
     }

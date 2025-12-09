@@ -1,8 +1,8 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.UpdateUserRequestDTO;
-
 import com.example.demo.dto.UserResponseDTO;
+import com.example.demo.model.User;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,22 +17,19 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    private record Message(String message){}
-
-
     @PutMapping("/update")
-    public ResponseEntity<Message> updateUser(@RequestBody Authentication authentication, UpdateUserRequestDTO updateUserRequestDTO) {
-        String currentUserCpf = authentication.getName();
-        UserResponseDTO updatedUser = userService.updateUser(currentUserCpf, updateUserRequestDTO);
+    public ResponseEntity<?> updateUser(Authentication authentication, @RequestBody  UpdateUserRequestDTO updateUserRequestDTO) {
+        User user = (User) authentication.getPrincipal();
+        UserResponseDTO updatedUser = userService.updateUser(user.getCpf(), updateUserRequestDTO);
 
-        return ResponseEntity.status(HttpStatus.OK).body( new Message("Updated User" + updatedUser));
+        return ResponseEntity.status(HttpStatus.OK).body("Updated User" + updatedUser);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Message> deleteUser(@RequestBody Authentication authentication) {
+    public ResponseEntity<?> deleteUser(Authentication authentication) {
         String currentUserCpf = authentication.getName();
         UserResponseDTO deltedUser = userService.deleteUser(currentUserCpf);
 
-        return ResponseEntity.status(HttpStatus.OK).body( new Message("Deleted User" + deltedUser));
+        return ResponseEntity.status(HttpStatus.OK).body("Deleted User" + deltedUser);
     }
 }

@@ -1,12 +1,9 @@
 package com.example.demo.model;
 
-import com.example.demo.enums.AccountType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import lombok.Data;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -32,20 +29,15 @@ public  class Account {
     @Column(name= "agency", nullable = false)
     private String agency = "123";
 
-    @Column(name = "type", nullable = false, insertable = false, updatable = false)
-    @Enumerated(EnumType.STRING)
-    private AccountType type;
-
     @Column(name = "balance", precision = 19, scale = 2)
     @DecimalMin(value = "0.0")
     private BigDecimal balance = BigDecimal.ZERO;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<PixKey> pixKeys;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "customer_cpf", referencedColumnName = "cpf")
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "user_cpf", nullable = false)
     @JsonIgnoreProperties("account")
     private User user;
 

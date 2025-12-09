@@ -1,5 +1,5 @@
 package com.example.demo.enums;
 
 public enum UserRole {
-    ROLE_CUSTOMER,
+    ROLE_USER,
 }

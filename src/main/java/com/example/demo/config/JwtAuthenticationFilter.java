@@ -2,7 +2,6 @@ package com.example.demo.config;
 
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.TokenService;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,7 +16,6 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
-
     private final UserRepository userRepository;
 
     public JwtAuthenticationFilter(TokenService tokenService, UserRepository userRepository) {
@@ -25,33 +23,40 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.userRepository = userRepository;
     }
 
-
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, jakarta.servlet.ServletException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
+            throws IOException, jakarta.servlet.ServletException {
+
         String authHeader = request.getHeader("Authorization");
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         String token = authHeader.substring(7);
 
-        if(tokenService.validateToken(token)) {
-            String userCpf = tokenService.getSubject(token);
+        if (tokenService.validateToken(token)) {
 
-            var userOpt = userRepository.findByCpf(userCpf);
+            String cpf = tokenService.getSubject(token);
 
-            if(userOpt.isPresent()) {
-                var user = userOpt.get();
+            var userOpt = userRepository.findByCpf(cpf);
 
-                var authorities = user.getAuthorities();
+            if (userOpt.isPresent()) {
 
-                var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
+                var usuario = userOpt.get();
+
+                var authorities = usuario.getAuthorities();
+
+                var authentication =
+                        new UsernamePasswordAuthenticationToken(usuario, null, authorities);
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
+
         filterChain.doFilter(request, response);
     }
 }

@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.demo.exception.InvalidArgumentException;
 import com.example.demo.exception.InvalidCredentialsExceptions;
-import com.example.demo.exception.UnauthorizedAccessException;
 import com.example.demo.model.Account;
 import com.example.demo.model.User;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,51 +17,49 @@ import java.time.ZoneOffset;
 public class TokenService {
 
     @Value("${api.security.token.secret}")
-    private String secretKey;
+    private String secret;
 
     public String getToken(Account account) {
         try {
-            Algorithm algorithm = Algorithm.HMAC256(secretKey);
+            Algorithm algorithm = Algorithm.HMAC256(secret);
 
-            User user = account.getUser();
+            User usuario = account.getUser();
 
-            if(user == null){
-                throw new InvalidArgumentException("Account not registered.");
+            if (usuario == null) {
+                throw new InvalidArgumentException("Account user is null");
             }
 
-            String token = JWT.create().withIssuer("Transactions").withSubject(user.getCpf()).withClaim("email", user.getEmail()).withClaim("role", user.getRole().name()).withExpiresAt(getExpirationDate()).sign(algorithm);
-
-            return token;
-        }catch (UnauthorizedAccessException e){
-            throw new UnauthorizedAccessException("Failed to load token.");
+            return JWT.create().withIssuer("Transactions").withSubject(usuario.getCpf()).withClaim("email", usuario.getEmail()).withClaim("role", usuario.getRole().name()).withExpiresAt(getExpirationDate()).sign(algorithm);
+        } catch (InvalidArgumentException e) {
+            throw new InvalidArgumentException("Failed on data process");
         } catch (Exception e) {
-            throw new RuntimeException("Internal error occurred.");
+            throw new RuntimeException("Internal error");
         }
     }
 
     public boolean validateToken(String token) {
         try {
-            Algorithm algorithm = Algorithm.HMAC256(secretKey);
+            Algorithm algorithm = Algorithm.HMAC256(secret);
 
             JWT.require(algorithm).withIssuer("Transactions").build().verify(token);
 
             return true;
         } catch (InvalidCredentialsExceptions e) {
-            throw new InvalidArgumentException("Invalid token.");
-        }  catch (Exception e) {
-            throw new RuntimeException("Internal error occurred.");
+            throw new InvalidArgumentException("Validate token failed");
+        } catch (Exception e) {
+            throw new RuntimeException("Internal error");
         }
     }
 
     public String getSubject(String token) {
         try {
-            Algorithm algorithm = Algorithm.HMAC256(secretKey);
+            Algorithm algorithm = Algorithm.HMAC256(secret);
 
             return JWT.require(algorithm).withIssuer("Transactions").build().verify(token).getSubject();
         } catch (InvalidCredentialsExceptions e) {
-            throw new InvalidArgumentException("Invalid token.");
+            throw new InvalidArgumentException("Validate token failed");
         } catch (Exception e) {
-            throw new RuntimeException("Internal error occurred.");
+            throw new RuntimeException("Internal error");
         }
     }
 

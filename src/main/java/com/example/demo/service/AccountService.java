@@ -41,20 +41,6 @@ public class AccountService {
         return convertToResponse(accountSearchedByCustomerCpf);
     }
 
-    @Transactional(readOnly = true)
-    public AccountResponseDTO findAccountByUserEmail(String email) {
-        Account accountSearchedByCustomerEmail = accountRepository.findByUser_Email(email).orElseThrow(() -> new NotFoundException("Account not found"));
-
-        return convertToResponse(accountSearchedByCustomerEmail);
-    }
-
-    @Transactional(readOnly = true)
-    public AccountResponseDTO findAccountByPixKey(String pixKey) {
-        Account accountSearchedByPixKey = accountRepository.findByPixKeys_Key(pixKey).orElseThrow(() -> new NotFoundException("Account not found"));
-
-        return convertToResponse(accountSearchedByPixKey);
-    }
-
     @Transactional
     public AccountResponseDTO createAccount(AccountRequestDTO accountRequestDTO) {
 

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.math.BigDecimal;
 
-public record TransactionRequestDTO(Account accountOrigin, Account accountReceiver,
+public record TransactionRequestDTO(String accountOrigin, String accountReceiver,
                                     @NotBlank(message = "Type of transaction is required") TransactionType type,
                                     BigDecimal amount) {
 }

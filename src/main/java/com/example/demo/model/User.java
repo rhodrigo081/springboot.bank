@@ -14,7 +14,7 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "TB_Customer")
+@Table(name = "TB_User")
 public class User implements UserDetails {
 
     @Id
@@ -36,12 +36,12 @@ public class User implements UserDetails {
     @Column(name = "phone", nullable = false, length = 11)
     private String phone;
 
-    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JsonIgnore
     private Account account;
 
     @Enumerated(EnumType.STRING)
-    private UserRole role;
+    private UserRole role = UserRole.ROLE_USER;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -50,12 +50,12 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.account != null ? this.account.getPassword() : null;
+        return account != null ? account.getPassword() : null;
     }
 
     @Override
     public String getUsername() {
-        return this.email;
+        return cpf;
     }
 
     @Override

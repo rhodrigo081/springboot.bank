@@ -29,27 +29,25 @@ public class AuthController {
     @Autowired
     private TokenService tokenService;
 
-    private record Message(String message) {
-    }
 
     @PostMapping("/register")
-    public ResponseEntity<Message> register(@RequestBody RegisterRequestDTO registerRequestDTO) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequestDTO registerRequestDTO) {
 
         try {
             RegisterResponseDTO registerResponseDTO = authService.register(registerRequestDTO);
-            return ResponseEntity.status(HttpStatus.OK).body(new Message("Registered Successfully!\n" + registerResponseDTO));
+            return ResponseEntity.status(HttpStatus.CREATED).body("Registered Successfully! " + registerResponseDTO);
         } catch (Exception e) {
             if (e.getMessage().contains("Duplicate entry") || e.getMessage().contains("Unique")) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new Message("Error: Email or Cpf already registered!"));
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Email or Cpf already registered!");
             }
 
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message("Error: " + e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
         }
 
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Message> login(@RequestBody LoginRequestDTO loginRequestDTO) {
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequestDTO) {
         try {
             var authenticationToken = new UsernamePasswordAuthenticationToken(loginRequestDTO.login(), loginRequestDTO.password());
 
@@ -59,11 +57,11 @@ public class AuthController {
 
             String token = tokenService.getToken(currentUser.getAccount());
 
-            return ResponseEntity.status(HttpStatus.OK).body(new Message("Logged in Successfully!\n" + token));
+            return ResponseEntity.status(HttpStatus.OK).body("Logged in Successfully! \ntoken: " + token);
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Message("Error: Invalid Credentials." ));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: Invalid Credentials." );
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Message("Error: " + e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
 

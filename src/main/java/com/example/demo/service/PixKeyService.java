@@ -32,17 +32,25 @@ public class PixKeyService {
         return new PixKeyResponseDTO(pixKey.getKey());
     }
 
-    @Transactional
-    public PixKeyResponseDTO createPixKeyPhone(String cpf) {
+    @Transactional(readOnly = true)
+    public List<PixKeyResponseDTO> findPixKeysUserId(Account account) {
 
-        Account accountSearchedByCustomerCpf = accountRepository.findByUser_Cpf(cpf).orElseThrow(() -> new NotFoundException("Account not found"));
+        List<PixKey> pixKeys = pixKeyRepository.findByAccount_Id(account.getId());
+
+        return pixKeys.stream().map(this::convertToResponse).toList();
+    }
+
+    @Transactional
+    public PixKeyResponseDTO generatePixKeyPhone(Account account) {
+
+        Account accountById = accountRepository.findById(account.getId())
+                .orElseThrow(() -> new NotFoundException("Account not found"));
 
         PixKey pixKeyPhone = new PixKey();
-        String accountPhone = accountSearchedByCustomerCpf.getUser().getPhone();
-        List<PixKey> pixKeys = accountSearchedByCustomerCpf.getPixKeys();
+        List<PixKey> pixKeys = accountById.getPixKeys();
 
-        pixKeyPhone.setKey(accountPhone);
-        pixKeyPhone.setAccount(accountSearchedByCustomerCpf);
+        pixKeyPhone.setKey(accountById.getUser().getPhone());
+        pixKeyPhone.setAccount(accountById);
         pixKeyPhone.setType(PixKeyType.PHONE);
 
         if (pixKeys.size() >= 5) {
@@ -56,16 +64,16 @@ public class PixKeyService {
     }
 
     @Transactional
-    public PixKeyResponseDTO createPixKeyEmail(String cpf) {
+    public PixKeyResponseDTO generatePixKeyEmail(Account account) {
 
-        Account accountSearchedByCustomerCpf = accountRepository.findByUser_Cpf(cpf).orElseThrow(() -> new NotFoundException("Account not found"));
+        Account accountById = accountRepository.findById(account.getId())
+                .orElseThrow(() -> new NotFoundException("Account not found"));
 
         PixKey pixKeyEmail = new PixKey();
-        String accountEmail = accountSearchedByCustomerCpf.getUser().getEmail();
-        List<PixKey> pixKeys = accountSearchedByCustomerCpf.getPixKeys();
+        List<PixKey> pixKeys = accountById.getPixKeys();
 
-        pixKeyEmail.setKey(accountEmail);
-        pixKeyEmail.setAccount(accountSearchedByCustomerCpf);
+        pixKeyEmail.setKey(accountById.getUser().getEmail());
+        pixKeyEmail.setAccount(accountById);
         pixKeyEmail.setType(PixKeyType.EMAIL);
 
         if (pixKeys.size() >= 5) {
@@ -79,16 +87,17 @@ public class PixKeyService {
     }
 
     @Transactional
-    public PixKeyResponseDTO createPixKeyCpf(String cpf) {
+    public PixKeyResponseDTO generatePixKeyCpf(Account account) {
 
-        Account accountSearchedByCustomerCpf = accountRepository.findByUser_Cpf(cpf).orElseThrow(() -> new NotFoundException("Account not found"));
+        Account accountById = accountRepository.findById(account.getId())
+                .orElseThrow(() -> new NotFoundException("Account not found"));
 
         PixKey pixKeyCpf = new PixKey();
-        List<PixKey> pixKeys = accountSearchedByCustomerCpf.getPixKeys();
+        List<PixKey> pixKeys = accountById.getPixKeys();
 
-        pixKeyCpf.setKey(cpf);
-        pixKeyCpf.setAccount(accountSearchedByCustomerCpf);
-        pixKeyCpf.setType(PixKeyType.CPF);
+        pixKeyCpf.setKey(accountById.getUser().getCpf());
+        pixKeyCpf.setAccount(accountById);
+        pixKeyCpf.setType(PixKeyType.EMAIL);
 
         if (pixKeys.size() >= 5) {
             throw new InvalidArgumentException("Account has reached the maximum limit of Pix Keys");
@@ -97,20 +106,20 @@ public class PixKeyService {
         pixKeys.add(pixKeyCpf);
         PixKey pixKeySaved = pixKeyRepository.save(pixKeyCpf);
 
-
         return convertToResponse(pixKeySaved);
     }
 
-    @Transactional
-    public PixKeyResponseDTO generateRandoKey(String cpf) {
 
-        Account accountSearchedByCustomerCpf = accountRepository.findByUser_Cpf(cpf).orElseThrow(() -> new NotFoundException("Account not found"));
+    @Transactional
+    public PixKeyResponseDTO generateRandomKey(Account account) {
+
+        Account accountById = accountRepository.findById(account.getId()).orElseThrow(() -> new NotFoundException("Account not found"));
 
         PixKey randomPixKey = new PixKey();
         String randomKey = UUID.randomUUID().toString();
-        List<PixKey> pixKeys = accountSearchedByCustomerCpf.getPixKeys();
+        List<PixKey> pixKeys = accountById.getPixKeys();
 
-        randomPixKey.setAccount(accountSearchedByCustomerCpf);
+        randomPixKey.setAccount(accountById);
         randomPixKey.setKey(randomKey);
         randomPixKey.setType(PixKeyType.RANDOM);
 
@@ -118,11 +127,7 @@ public class PixKeyService {
             throw new InvalidArgumentException("Account has reached the maximum limit of Pix Keys");
         }
         pixKeys.add(randomPixKey);
-
         PixKey randomPixKeySaved = pixKeyRepository.save(randomPixKey);
-        accountSearchedByCustomerCpf.setPixKeys(pixKeys);
-        accountRepository.save(accountSearchedByCustomerCpf);
-
 
         return convertToResponse(randomPixKeySaved);
     }
