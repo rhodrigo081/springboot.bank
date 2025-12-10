@@ -25,6 +25,7 @@ public class AuthService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
+
     @Autowired
     private AccountService accountService;
 
@@ -44,7 +45,7 @@ public class AuthService implements UserDetailsService {
             return userEmail.get();
         }
 
-        throw new UsernameNotFoundException("Usuário não encontrado com o login: " + login);
+        throw new UsernameNotFoundException("User not found with login: " + login);
     }
 
     @Transactional
