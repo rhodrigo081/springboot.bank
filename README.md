@@ -29,7 +29,7 @@ A API foi estruturada para suportar o ciclo de vida completo das transações ba
 * **Framework:** Spring Boot 3
 * **Persistência:** Spring Data JPA
 * **Banco de Dados:** PostgreSQL
-* **Infraestrutura: Docker & Docker Compose**
+* **Infraestrutura:** Docker & Docker Compose
 * **Segurança:** Spring Security e JWT (JSON Web Tokens)
 * **Documentação:** Springdoc OpenAPI (Swagger UI)
 
@@ -37,7 +37,7 @@ A API foi estruturada para suportar o ciclo de vida completo das transações ba
 
 ### Pré-requisitos
 
-* **Docker e Docker Compose Instalados**
+* Docker e Docker Compose Instalados
 
 ### Configuração
 
@@ -47,22 +47,19 @@ A API foi estruturada para suportar o ciclo de vida completo das transações ba
     cd springboot.bank
     ```
 
-2.  **Configure o Banco de Dados:**
-    Edite o arquivo `src/main/resources/application.properties` (ou `application.yml`) com suas credenciais de banco de dados:
-    ```properties
-    # Exemplo para PostgreSQL
-    spring.datasource.url=jdbc:postgresql://localhost:5432/[nome_do_seu_schema]
-    spring.datasource.username=[seu_usuario]
-    spring.datasource.password=[sua_senha]
-    # Outras configurações JPA/Hibernate
-    spring.jpa.hibernate.ddl-auto=update
+2.  **Gere o pacote do projeto:**
+    No terminal, execute o comando do Maven Wrapper:
+    ```bash
+    ./mvnw clean package -DskipTests
     ```
 
-3.  **Execute a Aplicação (usando Maven):**
+3.  **Suba os containers:**
     ```bash
-    ./mvnw spring-boot:run
+    docker-compose up --build
     ```
-    A API estará rodando em `http://localhost:8080` (ou na porta configurada).
+    Este comando irá baixar a imagem do PostgreSQL, construir a imagem da aplicação e conectar ambos em uma rede isolada.
+    
+### A API estará rodando em `http://localhost:8080` (ou na porta configurada).
 
 ## 📄 Documentação da API (Swagger UI)
 
