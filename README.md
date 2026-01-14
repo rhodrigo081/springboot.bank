@@ -29,6 +29,7 @@ A API foi estruturada para suportar o ciclo de vida completo das transações ba
 * **Framework:** Spring Boot 3
 * **Persistência:** Spring Data JPA
 * **Banco de Dados:** PostgreSQL
+* **Infraestrutura: Docker & Docker Compose**
 * **Segurança:** Spring Security e JWT (JSON Web Tokens)
 * **Documentação:** Springdoc OpenAPI (Swagger UI)
 
@@ -36,11 +37,7 @@ A API foi estruturada para suportar o ciclo de vida completo das transações ba
 
 ### Pré-requisitos
 
-Certifique-se de ter os seguintes softwares instalados em sua máquina:
-
-* JDK 17 ou superior
-* Maven
-* PostgreSQL e suas credenciais.
+* **Docker e Docker Compose Instalados**
 
 ### Configuração
 

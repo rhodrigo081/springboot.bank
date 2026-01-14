@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_DB: springboot.bank
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    container_name: springboot.bank
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/springboot.bank
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      API_SECRET_TOKEN: minha-chave-secreta-ZCKb3eUnuiTmDyAxevLWrqD0JmndcxViSw5ySC3gjGs=
+    depends_on:
+      - db
